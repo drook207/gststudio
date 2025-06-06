@@ -1,6 +1,7 @@
 # Contributing to GStreamer Pipeline Studio
 
-Thank you for your interest in contributing to GStreamer Pipeline Studio! We welcome contributions from developers of all skill levels.
+Thank you for your interest in contributing to GStreamer Pipeline Studio! We
+welcome contributions from developers of all skill levels.
 
 ## Table of Contents
 
@@ -54,10 +55,12 @@ We welcome several types of contributions:
 sudo pacman -S qt6-base qt6-declarative qt6-quickcontrols2 gstreamer cmake git
 
 # Ubuntu / Debian
-sudo apt install qt6-base-dev qt6-declarative-dev qt6-quickcontrols2-dev libgstreamer1.0-dev cmake git
+sudo apt install qt6-base-dev qt6-declarative-dev qt6-quickcontrols2-dev \
+                 libgstreamer1.0-dev cmake git
 
 # Fedora
-sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel gstreamer1-devel cmake git
+sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel \
+                 qt6-qtquickcontrols2-devel gstreamer1-devel cmake git
 ```
 
 ### Building from Source
@@ -82,16 +85,19 @@ make -j$(nproc)
 ### Development Environment
 
 **Recommended IDEs:**
+
 - Qt Creator (preferred for Qt/QML development)
 - CLion (excellent CMake support)
 - VS Code with Qt and C++ extensions
 
 **Useful Tools:**
+
 - `qmlformat` for QML code formatting
 - `clang-format` for C++ code formatting
 - `gst-inspect-1.0` for testing GStreamer elements
 
 **Key Files to Understand:**
+
 - `main.cpp` - Application initialization and QML registration
 - `Main.qml` - Primary user interface
 - `gstelementbrowser.h/.cpp` - Core browser functionality
@@ -119,13 +125,14 @@ private:
     // Member variables: m_ prefix, camelCase
     QString m_elementName;
     QList<GstProperty> m_properties;
-    
+
     // Private functions: camelCase
     void updateElementDetails();
 };
 ```
 
 **File Naming Convention (as used in project):**
+
 - Header files: `gstclassname.h` (lowercase)
 - Source files: `gstclassname.cpp` (lowercase)
 - Class names: `GstClassName` (PascalCase)
@@ -139,10 +146,10 @@ import QtQuick.Controls 2.15
 
 ApplicationWindow {
     id: root
-    
+
     // Properties: camelCase
     property string selectedElement: ""
-    
+
     // Components follow project structure
     GstElementBrowser {
         id: elementBrowser
@@ -189,7 +196,7 @@ Use descriptive branch names:
 
 Follow the Conventional Commits specification:
 
-```
+```text
 <type>[optional scope]: <description>
 
 [optional body]
@@ -198,6 +205,7 @@ Follow the Conventional Commits specification:
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -207,7 +215,8 @@ Follow the Conventional Commits specification:
 - `chore`: Maintenance tasks
 
 **Examples:**
-```
+
+```text
 feat(parser): add support for GStreamer 1.24 elements
 
 fix(ui): resolve Material theme issues on KDE systems
@@ -354,14 +363,15 @@ When the test framework is added:
 - Mock external dependencies (GStreamer calls)
 
 Example for future testing:
+
 ```cpp
 // Test for gstinspectparser.cpp
 TEST_CASE("GstInspectParser parses element properties correctly") {
     GstInspectParser parser;
     QString testOutput = "..."; // Mock gst-inspect output
-    
+
     GstElement element = parser.parseElementDetails(testOutput);
-    
+
     REQUIRE(element.properties.size() == 3);
     REQUIRE(element.properties[0].name == "automatic-eos");
     REQUIRE(element.properties[0].type == "Boolean");
@@ -372,12 +382,13 @@ TEST_CASE("GstInspectParser parses element properties correctly") {
 
 - 💬 **GitHub Discussions**: General questions and ideas
 - 🐛 **GitHub Issues**: Bug reports and feature requests
-- 📧 **Email**: maintainer@example.com for private inquiries
+- 📧 **Email**: <maintainer@example.com> for private inquiries
 - 🗨️ **Chat**: Join our development chat (link)
 
 ## Recognition
 
 Contributors will be recognized in:
+
 - `CONTRIBUTORS.md` file
 - Release notes
 - About dialog in the application

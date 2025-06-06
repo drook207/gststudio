@@ -1,36 +1,48 @@
 # GStreamer Pipeline Studio
 
-A modern, visual tool for creating and managing GStreamer multimedia pipelines with automatic code generation.
+A modern, visual tool for creating and managing GStreamer multimedia pipelines with
+automatic code generation.
 
 ## Overview
 
-GStreamer Pipeline Studio is a Qt6-based graphical application that provides an intuitive interface for building complex GStreamer pipelines. By combining visual node-based editing with dynamic element discovery, it bridges the gap between GStreamer's powerful capabilities and user-friendly pipeline creation.
+GStreamer Pipeline Studio is a Qt6-based graphical application that provides an
+intuitive interface for building complex GStreamer pipelines. By combining visual
+node-based editing with dynamic element discovery, it bridges the gap between
+GStreamer's powerful capabilities and user-friendly pipeline creation.
 
 ### Key Features
 
-- **Visual Pipeline Editor** - Drag-and-drop interface for connecting GStreamer elements
-- **Dynamic Element Discovery** - Automatically detects all installed GStreamer plugins using `gst-inspect`
-- **Real-time Property Editing** - Configure element properties through dynamically generated GUI controls
+- **Visual Pipeline Editor** - Drag-and-drop interface for connecting GStreamer
+  elements
+- **Dynamic Element Discovery** - Automatically detects all installed GStreamer
+  plugins using `gst-inspect`
+- **Real-time Property Editing** - Configure element properties through
+  dynamically generated GUI controls
 - **Code Generation** - Export working pipelines as clean C++ or Python code
-- **Element Browser** - Searchable catalog of available elements with detailed documentation
-- **Compatibility Validation** - Visual feedback for valid/invalid element connections
+- **Element Browser** - Searchable catalog of available elements with detailed
+  documentation
+- **Compatibility Validation** - Visual feedback for valid/invalid element
+  connections
 - **Modern UI** - Material Design dark theme with professional styling
 
 ## Current Status
 
 **Phase 1: Element Browser** ✅ *Completed*
+
 - GStreamer element discovery and parsing
 - Dynamic property and pad template display
 - Search and filtering capabilities
 - Qt6 + QML interface
 
 **Phase 2: Visual Pipeline Editor** 🚧 *In Development*
+
 - Node-based pipeline canvas
 - Drag-and-drop element placement
 - Visual connection system
 - Real-time pipeline validation
 
 **Phase 3: Code Generation** 📋 *Planned*
+
 - C++ code export with proper error handling
 - Python code generation (GObject and modern bindings)
 - Pipeline string export
@@ -46,7 +58,10 @@ GStreamer Pipeline Studio is a Qt6-based graphical application that provides an 
 
 ## Screenshots
 
-*Element Browser showing available GStreamer plugins with detailed property information*
+![Element Browser](screenshots/element-browser.png)
+
+*Element Browser showing available GStreamer plugins with detailed property
+information*
 
 ## Installation
 
@@ -57,28 +72,30 @@ GStreamer Pipeline Studio is a Qt6-based graphical application that provides an 
 sudo pacman -S qt6-base qt6-declarative qt6-quickcontrols2 gstreamer
 
 # Ubuntu / Debian
-sudo apt install qt6-base-dev qt6-declarative-dev qt6-controls2-dev libgstreamer1.0-dev
+sudo apt install qt6-base-dev qt6-declarative-dev qt6-controls2-dev \
+                 libgstreamer1.0-dev
 
 # Fedora
-sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel gstreamer1-devel
+sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel \
+                 qt6-qtquickcontrols2-devel gstreamer1-devel
 ```
 
 ### Building
 
 ```bash
-[git clone https://github.com/yourusername/gstreamer-pipeline-studio.git](https://github.com/drook207/gststudio.git)
+git clone https://github.com/drook207/gststudio.git
 cd gststudio
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
-./appGstStudio
+./gst-pipeline-studio
 ```
 
 ### Running
 
 ```bash
 # Standard launch
-./appGstStudio
+./gst-pipeline-studio
 
 # Force Material Dark theme (KDE systems)
 QT_QPA_PLATFORMTHEME="" QT_QUICK_CONTROLS_STYLE=Material ./gst-pipeline-studio
@@ -87,26 +104,31 @@ QT_QPA_PLATFORMTHEME="" QT_QUICK_CONTROLS_STYLE=Material ./gst-pipeline-studio
 ## Usage
 
 1. **Browse Elements**: Use the left panel to explore available GStreamer elements
-2. **Search & Filter**: Find specific elements using the search functionality  
-3. **View Details**: Click any element to see its properties, pad templates, and capabilities
-4. **Understand Properties**: See property types, default values, ranges, and access flags
+2. **Search & Filter**: Find specific elements using the search functionality
+3. **View Details**: Click any element to see its properties, pad templates, and
+   capabilities
+4. **Understand Properties**: See property types, default values, ranges, and
+   access flags
 5. **Explore Pads**: View source/sink pad capabilities and connection requirements
 
 ## Development Roadmap
 
 ### Near Term
+
 - [ ] Node-based visual pipeline editor
 - [ ] Element placement and connection system
 - [ ] Real-time pipeline validation
 - [ ] Basic code generation
 
-### Medium Term  
+### Medium Term
+
 - [ ] Advanced property editing widgets
 - [ ] Pipeline templates and presets
 - [ ] Plugin system for custom elements
 - [ ] Pipeline testing and debugging tools
 
 ### Long Term
+
 - [ ] Remote pipeline monitoring
 - [ ] Collaborative editing features
 - [ ] Integration with GStreamer development tools
@@ -114,7 +136,7 @@ QT_QPA_PLATFORMTHEME="" QT_QUICK_CONTROLS_STYLE=Material ./gst-pipeline-studio
 
 ## Architecture
 
-```
+```text
 ┌─────────────────┬─────────────────┐
 │   QML Frontend  │  Element Browser │
 ├─────────────────┼─────────────────┤
@@ -155,10 +177,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: Report bugs and feature requests on [GitHub Issues](https://github.com/drook207/gststudio.git/issues)
-- **Discussions**: Join conversations in [GitHub Discussions](https://github.com/drook207/gststudio.git/discussions)
-- **Documentation**: Visit our [Wiki](https://github.com/drook207/gststudio.git/wiki)
+- **Issues**: Report bugs and feature requests on [GitHub Issues](https://github.com/drook207/gststudio/issues)
+- **Discussions**: Join conversations in [GitHub Discussions](https://github.com/drook207/gststudio/discussions)
+- **Documentation**: Visit our [Wiki](https://github.com/drook207/gststudio/wiki)
 
 ---
 
-*"Making GStreamer pipeline creation as visual and intuitive as the multimedia content it processes."*
+> "Making GStreamer pipeline creation as visual and intuitive as the multimedia
+> content it processes."

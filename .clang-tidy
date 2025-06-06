@@ -38,9 +38,6 @@ Checks: >
 # Header filter to only check our code
 HeaderFilterRegex: '^.*/(src|main)\..*'
 
-# Analysis options
-AnalyzeTemporaryDtors: false
-
 CheckOptions:
   # Naming conventions for Qt/C++ code
   - key: readability-identifier-naming.ClassCase

@@ -1,0 +1,72 @@
+# .markdownlint.yaml - Markdown linting configuration for GstStudio
+# Relaxed rules for technical documentation
+
+# Default state for all rules
+default: true
+
+# Line length - allow longer lines for technical content
+MD013:
+  # Allow longer lines for code blocks, tables, and links
+  line_length: 120
+  # Don't check line length in code blocks
+  code_blocks: false
+  # Don't check line length in tables
+  tables: false
+  # Don't check line length for headings
+  headings: false
+
+# Heading style - allow both ATX (# ## ###) and setext (=== ---)
+MD003:
+  style: "consistent"
+
+# Unordered list style - allow both * and -
+MD004:
+  style: "consistent"
+
+# List indentation - allow different indentation for sublist
+MD007:
+  indent: 2
+
+# Trailing punctuation in headings - allow question marks
+MD026:
+  punctuation: ".,;:!"
+
+# Multiple consecutive blank lines - allow up to 2
+MD012:
+  maximum: 2
+
+# Fenced code blocks should have a language - DISABLE this rule
+MD040: false
+
+# Emphasis used instead of a heading - disabled for quotes
+MD036: false
+
+# First line in file should be a top level heading - disabled
+MD041: false
+
+# Proper names should have the correct capitalization - disabled for technical terms
+MD044: false
+
+# Images should have alternate text - make it a warning only
+MD045: false
+
+# Code fence style should be consistent
+MD046:
+  style: "fenced"
+
+# Files should end with a single newline character
+MD047: true
+
+# Code fence info strings should be surrounded by backticks
+MD048: false
+
+# Emphasis markers should be consistent
+MD049:
+  style: "asterisk"
+
+# Strong markers should be consistent
+MD050:
+  style: "asterisk"
+
+# Link fragments should be valid - disabled for internal links
+MD051: false

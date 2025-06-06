@@ -3,19 +3,13 @@
 namespace GstStudio {
 
 GstStudio::GstElementBrowser::GstElementBrowser(QObject* parent)
-    : QObject(parent)
-    , m_parser(new GstInspectParser(this))
-    , m_propertyModel(new GstPropertyModel(this))
-    , m_padModel(new GstPadModel(this))
-{
-    connect(m_parser, &GstInspectParser::parsingFinished,
-        this, &GstElementBrowser::onParsingFinished);
-    connect(m_parser, &GstInspectParser::elementParsed,
-        this, &GstElementBrowser::onElementParsed);
+    : QObject(parent), m_parser(new GstInspectParser(this)), m_propertyModel(new GstPropertyModel(this)),
+      m_padModel(new GstPadModel(this)) {
+    connect(m_parser, &GstInspectParser::parsingFinished, this, &GstElementBrowser::onParsingFinished);
+    connect(m_parser, &GstInspectParser::elementParsed, this, &GstElementBrowser::onElementParsed);
 }
 
-void GstStudio::GstElementBrowser::setSelectedElement(const QString& elementName)
-{
+void GstStudio::GstElementBrowser::setSelectedElement(const QString& elementName) {
     if (m_selectedElement != elementName) {
         m_selectedElement = elementName;
         updateElementDetails();
@@ -23,15 +17,13 @@ void GstStudio::GstElementBrowser::setSelectedElement(const QString& elementName
     }
 }
 
-void GstStudio::GstElementBrowser::refreshElements()
-{
+void GstStudio::GstElementBrowser::refreshElements() {
     m_isLoading = true;
     emit loadingChanged();
     m_parser->parseAllElements();
 }
 
-void GstStudio::GstElementBrowser::filterElements(const QString& filter)
-{
+void GstStudio::GstElementBrowser::filterElements(const QString& filter) {
     if (filter.isEmpty()) {
         m_filteredElementNames = m_elementNames;
     } else {
@@ -45,8 +37,7 @@ void GstStudio::GstElementBrowser::filterElements(const QString& filter)
     emit elementNamesChanged();
 }
 
-void GstStudio::GstElementBrowser::onParsingFinished()
-{
+void GstStudio::GstElementBrowser::onParsingFinished() {
     m_elementNames = m_parser->getAllElementNames();
     m_filteredElementNames = m_elementNames;
     m_isLoading = false;
@@ -54,13 +45,11 @@ void GstStudio::GstElementBrowser::onParsingFinished()
     emit loadingChanged();
 }
 
-void GstStudio::GstElementBrowser::onElementParsed(const QString& elementName)
-{
+void GstStudio::GstElementBrowser::onElementParsed(const QString& elementName) {
     // Could emit progress updates here if needed
 }
 
-void GstStudio::GstElementBrowser::updateElementDetails()
-{
+void GstStudio::GstElementBrowser::updateElementDetails() {
     if (m_selectedElement.isEmpty()) {
         m_currentElement = GstElement();
     } else {
@@ -72,4 +61,4 @@ void GstStudio::GstElementBrowser::updateElementDetails()
     emit elementDetailsChanged();
 }
 
-}
+} // namespace GstStudio
