@@ -66,19 +66,19 @@ sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-d
 ### Building
 
 ```bash
-git clone https://github.com/yourusername/gstreamer-pipeline-studio.git
-cd gstreamer-pipeline-studio
+[git clone https://github.com/yourusername/gstreamer-pipeline-studio.git](https://github.com/drook207/gststudio.git)
+cd gststudio
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
-./gst-pipeline-studio
+./appGstStudio
 ```
 
 ### Running
 
 ```bash
 # Standard launch
-./gst-pipeline-studio
+./appGstStudio
 
 # Force Material Dark theme (KDE systems)
 QT_QPA_PLATFORMTHEME="" QT_QUICK_CONTROLS_STYLE=Material ./gst-pipeline-studio
@@ -155,9 +155,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: Report bugs and feature requests on [GitHub Issues](https://github.com/yourusername/gstreamer-pipeline-studio/issues)
-- **Discussions**: Join conversations in [GitHub Discussions](https://github.com/yourusername/gstreamer-pipeline-studio/discussions)
-- **Documentation**: Visit our [Wiki](https://github.com/yourusername/gstreamer-pipeline-studio/wiki)
+- **Issues**: Report bugs and feature requests on [GitHub Issues](https://github.com/drook207/gststudio.git/issues)
+- **Discussions**: Join conversations in [GitHub Discussions](https://github.com/drook207/gststudio.git/discussions)
+- **Documentation**: Visit our [Wiki](https://github.com/drook207/gststudio.git/wiki)
 
 ---
 
