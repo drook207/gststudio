@@ -1,0 +1,142 @@
+# .clang-tidy - Static analysis configuration for GstStudio
+# Focused on Qt/C++ best practices and common issues
+
+Checks: >
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-exception-escape,
+  -cert-err58-cpp,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-macro-usage,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-static-cast-downcast,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-special-member-functions,
+  -modernize-avoid-c-arrays,
+  -modernize-use-trailing-return-type,
+  -readability-braces-around-statements,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length,
+  -readability-implicit-bool-conversion,
+  -readability-magic-numbers,
+  -readability-named-parameter,
+  -readability-uppercase-literal-suffix
+
+# Header filter to only check our code
+HeaderFilterRegex: '^.*/(src|main)\..*'
+
+# Analysis options
+AnalyzeTemporaryDtors: false
+
+CheckOptions:
+  # Naming conventions for Qt/C++ code
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.ClassPrefix
+    value: ''
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructPrefix
+    value: ''
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumPrefix
+    value: ''
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.FunctionPrefix
+    value: ''
+  - key: readability-identifier-naming.MethodCase
+    value: camelBack
+  - key: readability-identifier-naming.MethodPrefix
+    value: ''
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.VariablePrefix
+    value: ''
+  - key: readability-identifier-naming.MemberCase
+    value: camelBack
+  - key: readability-identifier-naming.MemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterPrefix
+    value: ''
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.ConstantPrefix
+    value: ''
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalConstantPrefix
+    value: ''
+  - key: readability-identifier-naming.StaticConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.StaticConstantPrefix
+    value: ''
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.MacroDefinitionPrefix
+    value: ''
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+  - key: readability-identifier-naming.NamespacePrefix
+    value: ''
+
+  # Qt-specific settings
+  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: 'true'
+  - key: cppcoreguidelines-special-member-functions.AllowMissingMoveFunctions
+    value: 'true'
+  - key: modernize-use-auto.MinTypeNameLength
+    value: '5'
+  - key: modernize-use-auto.RemoveStars
+    value: 'false'
+  - key: modernize-loop-convert.MaxCopySize
+    value: '16'
+  - key: modernize-loop-convert.MinConfidence
+    value: reasonable
+  - key: modernize-loop-convert.NamingStyle
+    value: CamelCase
+  - key: modernize-pass-by-value.IncludeStyle
+    value: google
+  - key: modernize-replace-auto-ptr.IncludeStyle
+    value: google
+  - key: performance-for-range-copy.AllowedTypes
+    value: 'QColor;QPoint;QPointF;QSize;QSizeF;QRect;QRectF'
+  - key: performance-inefficient-vector-operation.EnableProto
+    value: 'false'
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: 'false'
+  - key: performance-no-automatic-move.AllowedTypes
+    value: ''
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'QString;QStringView;QByteArray;QColor;QPoint;QPointF;QSize;QSizeF;QRect;QRectF'
+  - key: readability-function-size.LineThreshold
+    value: '100'
+  - key: readability-function-size.StatementThreshold
+    value: '50'
+  - key: readability-function-size.BranchThreshold
+    value: '10'
+  - key: readability-function-size.ParameterThreshold
+    value: '8'
+  - key: readability-function-size.NestingThreshold
+    value: '4'
+  - key: readability-function-size.VariableThreshold
+    value: '20'
+
+# System headers to ignore
+SystemHeaders: false
