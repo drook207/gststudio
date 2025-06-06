@@ -29,7 +29,6 @@ IndentGotoLabels: true
 IndentPPDirectives: None
 IndentExternBlock: AfterExternBlock
 IndentRequires: false
-IndentWidth: 4
 IndentWrappedFunctionNames: false
 
 # Breaking
@@ -158,7 +157,6 @@ ReflowComments: true
 RemoveBracesLLVM: false
 SeparateDefinitionBlocks: Leave
 ShortNamespaceLines: 1
-SortIncludes: CaseSensitive
 SortJavaStaticImport: Before
 StatementAttributeLikeMacros:
   - Q_EMIT
