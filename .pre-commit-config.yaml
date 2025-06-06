@@ -80,12 +80,18 @@ repos:
         files: \.qml$
         exclude: '^Generated/.*'
 
-  # CMake formatting
+  # CMake formatting (no config file - most reliable)
   - repo: https://github.com/cheshirekow/cmake-format-precommit
     rev: v0.6.13
     hooks:
       - id: cmake-format
-        args: [--in-place]
+        args:
+          - --in-place
+          - --line-width=100
+          - --tab-size=4
+          - --separate-ctrl-name-with-space=false
+          - --separate-fn-name-with-space=false
+          - --dangle-parens=false
         files: (CMakeLists\.txt|\.cmake)$
         exclude: '^Generated/.*'
 
