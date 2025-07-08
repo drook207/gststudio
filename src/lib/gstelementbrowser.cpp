@@ -56,8 +56,8 @@ void GstStudio::GstElementBrowser::updateElementDetails() {
         m_currentElement = m_parser->getElement(m_selectedElement);
     }
 
-    m_propertyModel->setProperties(m_currentElement.properties);
-    m_padModel->setPadTemplates(m_currentElement.padTemplates);
+    m_propertyModel->setProperties(m_currentElement.m_properties);
+    m_padModel->setPadTemplates(m_currentElement.m_padTemplates);
     emit elementDetailsChanged();
 }
 

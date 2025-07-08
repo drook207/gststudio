@@ -9,13 +9,17 @@ GstStudio::GstInspectParser::GstInspectParser(QObject* parent) : QObject(parent)
 }
 
 bool GstStudio::GstInspectParser::parseAllElements() {
-    if (m_process->state() != QProcess::NotRunning) {
+    QProcess process;
+    process.start("gst-inspect-1.0", QStringList() << "--print-all");
+    if (!process.waitForStarted()) {
         return false;
     }
 
-    // First get list of all elements
-    m_process->start("gst-inspect-1.0", QStringList() << "--print-all");
-    return m_process->waitForStarted();
+    if (!process.waitForFinished()) {
+        return false;
+    }
+
+    return true;
 }
 
 GstElement GstStudio::GstInspectParser::parseElement(const QString& elementName) {
@@ -47,7 +51,7 @@ void GstStudio::GstInspectParser::parseElementList(const QString& output) {
             QString elementName = match.captured(1);
 
             // Find the end of this element's section (next element or end of file)
-            int endIndex = lines.size();
+            int endIndex = static_cast<int>(lines.size());
             for (int j = i + 1; j < lines.size(); ++j) {
                 if (elementStartRegex.match(lines[j]).hasMatch()) {
                     endIndex = j;
@@ -61,7 +65,7 @@ void GstStudio::GstInspectParser::parseElementList(const QString& output) {
 
             // Parse the element details
             GstElement element = parseElementDetails(elementOutput);
-            element.name = elementName;
+            element.m_name = elementName;
 
             m_elements[elementName] = element;
             emit elementParsed(elementName);
@@ -80,32 +84,32 @@ GstElement GstStudio::GstInspectParser::parseElementDetails(const QString& outpu
     static QRegularExpression longNameRegex(R"(\w+:\s+Long-name\s+(.+))");
     QRegularExpressionMatch longNameMatch = longNameRegex.match(output);
     if (longNameMatch.hasMatch()) {
-        element.longName = longNameMatch.captured(1).trimmed();
+        element.m_longName = longNameMatch.captured(1).trimmed();
     }
 
     static QRegularExpression klassRegex(R"(\w+:\s+Klass\s+(.+))");
     QRegularExpressionMatch klassMatch = klassRegex.match(output);
     if (klassMatch.hasMatch()) {
-        element.classification = klassMatch.captured(1).trimmed();
+        element.m_classification = klassMatch.captured(1).trimmed();
     }
 
     static QRegularExpression descRegex(R"(\w+:\s+Description\s+(.+))");
     QRegularExpressionMatch descMatch = descRegex.match(output);
     if (descMatch.hasMatch()) {
-        element.description = descMatch.captured(1).trimmed();
+        element.m_description = descMatch.captured(1).trimmed();
     }
 
     static QRegularExpression authorRegex(R"(\w+:\s+Author\s+(.+))");
     QRegularExpressionMatch authorMatch = authorRegex.match(output);
     if (authorMatch.hasMatch()) {
-        element.author = authorMatch.captured(1).trimmed();
+        element.m_author = authorMatch.captured(1).trimmed();
     }
 
     // Parse rank
     static QRegularExpression rankRegex(R"(\w+:\s+Rank\s+(\w+)\s+\((\d+)\))");
     QRegularExpressionMatch rankMatch = rankRegex.match(output);
     if (rankMatch.hasMatch()) {
-        element.rank = rankMatch.captured(1);
+        element.m_rank = rankMatch.captured(1);
     }
 
     // Extract and parse properties section
@@ -137,8 +141,8 @@ void GstStudio::GstInspectParser::parseProperties(const QString& section, GstEle
         QString trimmedLine = line.trimmed();
         if (trimmedLine.isEmpty()) {
             // Empty line might indicate end of current property
-            if (!currentProperty.name.isEmpty()) {
-                element.properties.append(currentProperty);
+            if (!currentProperty.m_name.isEmpty()) {
+                element.m_properties.append(currentProperty);
                 currentProperty = GstProperty();
             }
             continue;
@@ -150,22 +154,22 @@ void GstStudio::GstInspectParser::parseProperties(const QString& section, GstEle
 
         if (propMatch.hasMatch()) {
             // Save previous property if exists
-            if (!currentProperty.name.isEmpty()) {
-                element.properties.append(currentProperty);
+            if (!currentProperty.m_name.isEmpty()) {
+                element.m_properties.append(currentProperty);
             }
 
             // Start new property
             currentProperty = GstProperty();
-            currentProperty.name = propMatch.captured(1);
-            currentProperty.description = propMatch.captured(2);
-        } else if (!currentProperty.name.isEmpty()) {
+            currentProperty.m_name = propMatch.captured(1);
+            currentProperty.m_description = propMatch.captured(2);
+        } else if (!currentProperty.m_name.isEmpty()) {
             // This is a continuation line for the current property
 
             // Parse flags line
             if (trimmedLine.contains("flags:")) {
-                currentProperty.readable = trimmedLine.contains("lesbar") || trimmedLine.contains("readable");
-                currentProperty.writable = trimmedLine.contains("schreibbar") || trimmedLine.contains("writable");
-                currentProperty.controllable = trimmedLine.contains("controllable");
+                currentProperty.m_readable = trimmedLine.contains("lesbar") || trimmedLine.contains("readable");
+                currentProperty.m_writable = trimmedLine.contains("schreibbar") || trimmedLine.contains("writable");
+                currentProperty.m_controllable = trimmedLine.contains("controllable");
             }
 
             // Parse type and default value
@@ -173,12 +177,12 @@ void GstStudio::GstInspectParser::parseProperties(const QString& section, GstEle
                 R"(^(\w+(?:\s+\w+)*)\.\s*(?:Range:\s*([^D]+?))?\s*(?:Default:\s*(.+))?$)");
             QRegularExpressionMatch typeMatch = typeRegex.match(trimmedLine);
             if (typeMatch.hasMatch()) {
-                currentProperty.type = typeMatch.captured(1);
+                currentProperty.m_type = typeMatch.captured(1);
                 if (!typeMatch.captured(2).isEmpty()) {
-                    currentProperty.range = typeMatch.captured(2).trimmed();
+                    currentProperty.m_range = typeMatch.captured(2).trimmed();
                 }
                 if (!typeMatch.captured(3).isEmpty()) {
-                    currentProperty.defaultValue = typeMatch.captured(3).trimmed();
+                    currentProperty.m_defaultValue = typeMatch.captured(3).trimmed();
                 }
             }
 
@@ -188,15 +192,15 @@ void GstStudio::GstInspectParser::parseProperties(const QString& section, GstEle
                 QRegularExpressionMatchIterator enumIterator = enumRegex.globalMatch(trimmedLine);
                 while (enumIterator.hasNext()) {
                     QRegularExpressionMatch enumMatch = enumIterator.next();
-                    currentProperty.enumValues.append(enumMatch.captured(2));
+                    currentProperty.m_enumValues.append(enumMatch.captured(2));
                 }
             }
         }
     }
 
     // Don't forget the last property
-    if (!currentProperty.name.isEmpty()) {
-        element.properties.append(currentProperty);
+    if (!currentProperty.m_name.isEmpty()) {
+        element.m_properties.append(currentProperty);
     }
 }
 
@@ -208,13 +212,13 @@ GstProperty GstStudio::GstInspectParser::parseProperty(const QString& propertyTe
         return prop;
 
     // First line contains name and description
-    QString firstLine = lines.first();
+    const QString& firstLine = lines.first();
     static QRegularExpression nameRegex(R"(^\s*(\w+)\s*:\s*(.+)$)");
     QRegularExpressionMatch nameMatch = nameRegex.match(firstLine);
 
     if (nameMatch.hasMatch()) {
-        prop.name = nameMatch.captured(1);
-        prop.description = nameMatch.captured(2);
+        prop.m_name = nameMatch.captured(1);
+        prop.m_description = nameMatch.captured(2);
     }
 
     // Parse remaining lines for flags, type, default value, etc.
@@ -223,18 +227,18 @@ GstProperty GstStudio::GstInspectParser::parseProperty(const QString& propertyTe
 
         // Parse flags
         if (line.startsWith("flags:")) {
-            prop.readable = line.contains("readable");
-            prop.writable = line.contains("writable");
-            prop.controllable = line.contains("controllable");
+            prop.m_readable = line.contains("readable");
+            prop.m_writable = line.contains("writable");
+            prop.m_controllable = line.contains("controllable");
         }
 
         // Parse type and default value
         static QRegularExpression typeRegex(R"(^(\w+)\.\s*(?:Range:\s*([^D]+))?\s*(?:Default:\s*(.+))?$)");
         QRegularExpressionMatch typeMatch = typeRegex.match(line);
         if (typeMatch.hasMatch()) {
-            prop.type = typeMatch.captured(1);
-            prop.range = typeMatch.captured(2).trimmed();
-            prop.defaultValue = typeMatch.captured(3).trimmed();
+            prop.m_type = typeMatch.captured(1);
+            prop.m_range = typeMatch.captured(2).trimmed();
+            prop.m_defaultValue = typeMatch.captured(3).trimmed();
         }
 
         // Parse enum values
@@ -243,7 +247,7 @@ GstProperty GstStudio::GstInspectParser::parseProperty(const QString& propertyTe
             QRegularExpressionMatchIterator enumIterator = enumRegex.globalMatch(line);
             while (enumIterator.hasNext()) {
                 QRegularExpressionMatch enumMatch = enumIterator.next();
-                prop.enumValues.append(enumMatch.captured(2));
+                prop.m_enumValues.append(enumMatch.captured(2));
             }
         }
     }
@@ -261,60 +265,20 @@ void GstStudio::GstInspectParser::parsePadTemplates(const QString& section, GstE
         if (trimmedLine.isEmpty())
             continue;
 
-        // Parse pad template header like: "dv1394src:   SRC template: 'src'"
-        static QRegularExpression padRegex(R"(\w+:\s+(SRC|SINK)\s+template:\s*'([^']+)')");
-        QRegularExpressionMatch padMatch = padRegex.match(line);
-        if (padMatch.hasMatch()) {
-            // Save previous pad if exists
-            if (!currentPad.name.isEmpty()) {
-                element.padTemplates.append(currentPad);
-            }
-
-            // Start new pad
-            currentPad = GstPadTemplate();
-            currentPad.direction = padMatch.captured(1);
-            currentPad.name = padMatch.captured(2);
-            inCapabilities = false;
-        }
-
-        // Parse availability
-        if (trimmedLine.contains("Availability:")) {
-            if (trimmedLine.contains("Always"))
-                currentPad.presence = "ALWAYS";
-            else if (trimmedLine.contains("Sometimes"))
-                currentPad.presence = "SOMETIMES";
-            else if (trimmedLine.contains("On request"))
-                currentPad.presence = "REQUEST";
-        }
-
-        // Start of capabilities section
-        if (trimmedLine.contains("Capabilities:")) {
-            inCapabilities = true;
+        if (processPadTemplateHeader(line, currentPad, element, inCapabilities)) {
             continue;
         }
 
-        // Capabilities content (indented lines after "Capabilities:")
-        if (inCapabilities && (trimmedLine.startsWith("video/") || trimmedLine.startsWith("audio/") ||
-                               trimmedLine.startsWith("application/") || trimmedLine.startsWith("text/") ||
-                               trimmedLine.startsWith("image/") || trimmedLine.contains("format:") ||
-                               trimmedLine.contains("systemstream:"))) {
-            if (!currentPad.caps.isEmpty()) {
-                currentPad.caps += "\n";
-            }
-            currentPad.caps += trimmedLine;
+        if (processAvailabilityLine(trimmedLine, currentPad)) {
+            continue;
         }
 
-        // Stop capabilities parsing when we hit another section
-        if (inCapabilities && (trimmedLine.contains("Element has") || trimmedLine.contains("URI handling") ||
-                               trimmedLine.contains("Pads:"))) {
-            inCapabilities = false;
+        if (processCapabilitiesSection(trimmedLine, currentPad, inCapabilities)) {
+            continue;
         }
     }
 
-    // Don't forget the last pad
-    if (!currentPad.name.isEmpty()) {
-        element.padTemplates.append(currentPad);
-    }
+    finalizePadTemplate(currentPad, element);
 }
 
 GstPadTemplate GstStudio::GstInspectParser::parsePadTemplate(const QString& padText) {
@@ -324,57 +288,122 @@ GstPadTemplate GstStudio::GstInspectParser::parsePadTemplate(const QString& padT
     for (const QString& line : std::as_const(lines)) {
         QString trimmedLine = line.trimmed();
 
-        // Parse pad name and direction like: "SRC template: 'src'"
-        static QRegularExpression padRegex(R"(^(SRC|SINK)\s+template:\s*'([^']+)')");
-        QRegularExpressionMatch padMatch = padRegex.match(trimmedLine);
-        if (padMatch.hasMatch()) {
-            pad.direction = padMatch.captured(1);
-            pad.name = padMatch.captured(2);
-        }
-
-        // Parse presence
-        if (trimmedLine.startsWith("Availability:")) {
-            if (trimmedLine.contains("Always"))
-                pad.presence = "ALWAYS";
-            else if (trimmedLine.contains("Sometimes"))
-                pad.presence = "SOMETIMES";
-            else if (trimmedLine.contains("On request"))
-                pad.presence = "REQUEST";
-        }
-
-        // Capabilities span multiple lines, collect them
-        if (trimmedLine.startsWith("Capabilities:")) {
-            // Caps follow on subsequent lines, typically indented
-            continue;
-        }
-
-        // If this looks like a capability line (starts with media type)
-        if (trimmedLine.contains("/") && !trimmedLine.startsWith("Availability:")) {
-            if (!pad.caps.isEmpty())
-                pad.caps += "\n";
-            pad.caps += trimmedLine;
-        }
+        parsePadNameAndDirection(trimmedLine, pad);
+        processAvailabilityLine(trimmedLine, pad);
+        processCapabilityLine(trimmedLine, pad);
     }
 
     return pad;
 }
 
+bool GstStudio::GstInspectParser::processPadTemplateHeader(const QString& line, GstPadTemplate& currentPad,
+                                                           GstElement& element, bool& inCapabilities) {
+    static QRegularExpression padRegex(R"(\w+:\s+(SRC|SINK)\s+template:\s*'([^']+)')");
+    QRegularExpressionMatch padMatch = padRegex.match(line);
+    if (padMatch.hasMatch()) {
+        finalizePadTemplate(currentPad, element);
+
+        currentPad = GstPadTemplate();
+        currentPad.m_direction = padMatch.captured(1);
+        currentPad.m_name = padMatch.captured(2);
+        inCapabilities = false;
+        return true;
+    }
+    return false;
+}
+
+bool GstStudio::GstInspectParser::processAvailabilityLine(const QString& trimmedLine, GstPadTemplate& pad) {
+    if (trimmedLine.contains("Availability:")) {
+        if (trimmedLine.contains("Always"))
+            pad.m_presence = "ALWAYS";
+        else if (trimmedLine.contains("Sometimes"))
+            pad.m_presence = "SOMETIMES";
+        else if (trimmedLine.contains("On request"))
+            pad.m_presence = "REQUEST";
+        return true;
+    }
+    return false;
+}
+
+bool GstStudio::GstInspectParser::processCapabilitiesSection(const QString& trimmedLine, GstPadTemplate& currentPad,
+                                                             bool& inCapabilities) {
+    if (trimmedLine.contains("Capabilities:")) {
+        inCapabilities = true;
+        return true;
+    }
+
+    if (inCapabilities && isCapabilityLine(trimmedLine)) {
+        if (!currentPad.m_caps.isEmpty()) {
+            currentPad.m_caps += "\n";
+        }
+        currentPad.m_caps += trimmedLine;
+        return true;
+    }
+
+    if (inCapabilities && isSectionEnd(trimmedLine)) {
+        inCapabilities = false;
+        return true;
+    }
+
+    return false;
+}
+
+bool GstStudio::GstInspectParser::isCapabilityLine(const QString& line) {
+    return line.startsWith("video/") || line.startsWith("audio/") || line.startsWith("application/") ||
+           line.startsWith("text/") || line.startsWith("image/") || line.contains("format:") ||
+           line.contains("systemstream:");
+}
+
+bool GstStudio::GstInspectParser::isSectionEnd(const QString& line) {
+    return line.contains("Element has") || line.contains("URI handling") || line.contains("Pads:");
+}
+
+void GstStudio::GstInspectParser::finalizePadTemplate(GstPadTemplate& pad, GstElement& element) {
+    if (!pad.m_name.isEmpty()) {
+        element.m_padTemplates.append(pad);
+    }
+}
+
+void GstStudio::GstInspectParser::parsePadNameAndDirection(const QString& line, GstPadTemplate& pad) {
+    static QRegularExpression padRegex(R"(^(SRC|SINK)\s+template:\s*'([^']+)')");
+    QRegularExpressionMatch padMatch = padRegex.match(line);
+    if (padMatch.hasMatch()) {
+        pad.m_direction = padMatch.captured(1);
+        pad.m_name = padMatch.captured(2);
+    }
+}
+
+void GstStudio::GstInspectParser::processCapabilityLine(const QString& line, GstPadTemplate& pad) {
+    if (line.startsWith("Capabilities:")) {
+        return;
+    }
+
+    if (line.contains("/") && !line.startsWith("Availability:")) {
+        if (!pad.m_caps.isEmpty())
+            pad.m_caps += "\n";
+        pad.m_caps += line;
+    }
+}
+
+QString GstStudio::GstInspectParser::extracted() {
+    return {};
+}
 QString GstStudio::GstInspectParser::extractSection(const QString& text, const QString& sectionName) {
-    int startPos = text.indexOf(sectionName);
+    auto startPos = text.indexOf(sectionName);
     if (startPos == -1)
-        return QString();
+        return extracted();
 
     startPos += sectionName.length();
 
     // Find the next major section or end of text
     QStringList nextSections = {
         "Factory Details:", "Pad Templates:", "Element Properties:", "Element Signals:", "Element Actions:"};
-    int endPos = text.length();
+    auto endPos = text.length();
 
     for (const QString& nextSection : nextSections) {
         if (nextSection == sectionName)
             continue;
-        int pos = text.indexOf(nextSection, startPos);
+        auto pos = text.indexOf(nextSection, startPos);
         if (pos != -1 && pos < endPos) {
             endPos = pos;
         }
@@ -403,7 +432,7 @@ GstElement GstStudio::GstInspectParser::getElement(const QString& name) const {
 QStringList GstStudio::GstInspectParser::getElementsByClassification(const QString& classification) const {
     QStringList result;
     for (auto it = m_elements.begin(); it != m_elements.end(); ++it) {
-        if (it.value().classification.contains(classification, Qt::CaseInsensitive)) {
+        if (it.value().m_classification.contains(classification, Qt::CaseInsensitive)) {
             result.append(it.key());
         }
     }

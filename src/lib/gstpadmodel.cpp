@@ -7,35 +7,35 @@ GstStudio::GstPadModel::GstPadModel(QObject* parent) : QAbstractListModel(parent
 
 int GstStudio::GstPadModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent)
-    return m_pads.size();
+    return static_cast<int>(m_pads.size());
 }
 
 QVariant GstStudio::GstPadModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid() || index.row() >= m_pads.size())
-        return QVariant();
+        return {};
 
     const GstPadTemplate& pad = m_pads.at(index.row());
 
     switch (role) {
-        case NameRole:
-            return pad.name;
-        case DirectionRole:
-            return pad.direction;
-        case PresenceRole:
-            return pad.presence;
-        case CapsRole:
-            return pad.caps;
+        case NAME_ROLE:
+            return pad.m_name;
+        case DIRECTION_ROLE:
+            return pad.m_direction;
+        case PRESENCE_ROLE:
+            return pad.m_presence;
+        case CAPS_ROLE:
+            return pad.m_caps;
         default:
-            return QVariant();
+            return {};
     }
 }
 
 QHash<int, QByteArray> GstStudio::GstPadModel::roleNames() const {
     QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[DirectionRole] = "direction";
-    roles[PresenceRole] = "presence";
-    roles[CapsRole] = "caps";
+    roles[NAME_ROLE] = "name";
+    roles[DIRECTION_ROLE] = "direction";
+    roles[PRESENCE_ROLE] = "presence";
+    roles[CAPS_ROLE] = "caps";
     return roles;
 }
 

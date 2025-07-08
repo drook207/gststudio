@@ -7,34 +7,34 @@ GstStudio::GstPropertyModel::GstPropertyModel(QObject* parent) : QAbstractListMo
 
 int GstStudio::GstPropertyModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent)
-    return m_properties.size();
+    return static_cast<int>(m_properties.size());
 }
 
 QVariant GstStudio::GstPropertyModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid() || index.row() >= m_properties.size())
-        return QVariant();
+        return {};
 
     const GstProperty& prop = m_properties.at(index.row());
 
     switch (role) {
         case NameRole:
-            return prop.name;
+            return prop.m_name;
         case TypeRole:
-            return prop.type;
+            return prop.m_type;
         case DescriptionRole:
-            return prop.description;
+            return prop.m_description;
         case DefaultValueRole:
-            return prop.defaultValue;
+            return prop.m_defaultValue;
         case RangeRole:
-            return prop.range;
+            return prop.m_range;
         case EnumValuesRole:
-            return QVariant::fromValue(prop.enumValues);
+            return QVariant::fromValue(prop.m_enumValues);
         case WritableRole:
-            return prop.writable;
+            return prop.m_writable;
         case ReadableRole:
-            return prop.readable;
+            return prop.m_readable;
         default:
-            return QVariant();
+            return {};
     }
 }
 
