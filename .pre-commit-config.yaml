@@ -1,7 +1,7 @@
 # .pre-commit-config.yaml - Pre-commit hooks for GstStudio
 # Ensures code quality and consistency before commits
 
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: false
 
 repos:
