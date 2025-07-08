@@ -37,6 +37,29 @@ set_target_properties(
 target_link_libraries(appGstStudio PRIVATE Qt6::Quick Qt6::QuickControls2 Qt6::Gui Qt6::Qml
                                            gststudio)
 
+# Documentation target
+find_package(Doxygen QUIET)
+if(DOXYGEN_FOUND)
+    add_custom_target(
+        doc
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM)
+
+    # Optional: Add a custom target to clean documentation
+    add_custom_target(
+        doc-clean
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/docs
+        COMMENT "Removing generated documentation"
+        VERBATIM)
+
+    message(STATUS "Doxygen found: ${DOXYGEN_EXECUTABLE}")
+    message(STATUS "Documentation target 'doc' available")
+else()
+    message(WARNING "Doxygen not found. Documentation target 'doc' not available")
+endif()
+
 include(GNUInstallDirs)
 install(
     TARGETS appGstStudio
