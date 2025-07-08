@@ -19,7 +19,9 @@ qt_add_qml_module(
     gstpropertymodel.cpp
     gstpadmodel.h
     gstpadmodel.cpp
-    gstelement.h)
+    gstelement.h
+    OUTPUT_DIRECTORY
+    ${CMAKE_BINARY_DIR}/GstInspect)
 
 target_link_libraries(gststudio PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Qml Qt6::QuickControls2)
 
