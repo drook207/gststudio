@@ -4,6 +4,8 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 import GstInspect
 
+pragma ComponentBehavior : Bound
+
 ApplicationWindow {
 
     Material.theme: Material.Dark
@@ -76,22 +78,22 @@ ApplicationWindow {
                         required property int index
                         Rectangle {
                             anchors.fill: parent
-                            color: parent.hovered ? "#e3f2fd" : (elementBrowser.selectedElement === delegate.modelData ? "#bbdefb" : "transparent")
-                            border.color: elementBrowser.selectedElement
+                            color: parent.hovered ? "#e3f2fd" : (delegate.modelData.selectedElement === modelData ? "#bbdefb" : "transparent")
+                            border.color: delegate.modelData.selectedElement
                                           === delegate.modelData ? "#2196f3" : "transparent"
 
                             Text {
                                 anchors.left: parent.left
                                 anchors.leftMargin: 10
-                                anchors.verticalCenter: parent.verticalCenterelementList
+                                anchors.verticalCenter: parent.verticalCenter
                                 text: delegate.modelData
                                 font.family: "monospace"
                             }
                         }
 
                         onClicked: {
-                            elementBrowser.selectedElement = delegate.modelData
-                            elementList.currentIndex = delegate.index
+                            modelData.selectedElement = delegate.modelData
+                            modelData.currentIndex = delegate.index
                         }
                     }
 
@@ -217,16 +219,8 @@ ApplicationWindow {
                                 delegate: Rectangle {
                                     id: propertiesTab
                                     required property int index
-                                    required property string name
-                                    required property int type
-                                    required property bool readable
-                                    required property bool writable
-                                    required property string description
-                                    required property string defaultValue
-                                    required property string range
-                                    required property string enumValues
                                     required property string modelData
-                                    width: propertiesTabListView.width
+                                    width: parent.width
                                     height: propColumn.height + 20
                                     color: propertiesTab.index % 2 == 0 ? "#fafafa" : "white"
                                     border.color: "#eee"
@@ -241,14 +235,14 @@ ApplicationWindow {
 
                                         RowLayout {
                                             Text {
-                                                text: propertiesTab.name
+                                                text: propertiesTab.modelData.name
                                                 font.bold: true
                                                 font.family: "monospace"
                                                 color: "#d73a49"
                                             }
 
                                             Text {
-                                                text: `(${propertiesTab.type})`
+                                                text: `(${propertiesTab.modelData.type})`
                                                 font.pointSize: 9
                                                 color: "#6f42c1"
                                             }
@@ -260,9 +254,9 @@ ApplicationWindow {
                                                 Rectangle {
                                                     width: readableText.width + 8
                                                     height: readableText.height + 4
-                                                    color: propertiesTab.readable ? "#28a745" : "#dc3545"
+                                                    color: propertiesTab.modelData.readable ? "#28a745" : "#dc3545"
                                                     radius: 2
-                                                    visible: propertiesTab.readable
+                                                    visible: propertiesTab.modelData.readable
                                                              || propertiesTab.writable
 
                                                     Text {
@@ -281,8 +275,8 @@ ApplicationWindow {
                                                     height: writableText.height + 4
                                                     color: propertiesTab.writable ? "#28a745" : "#dc3545"
                                                     radius: 2
-                                                    visible: propertiesTab.readable
-                                                             || propertiesTab.writable
+                                                    visible: propertiesTab.modelData.readable
+                                                             || propertiesTab.modelData.writable
 
                                                     Text {
                                                         id: writableText
@@ -297,7 +291,7 @@ ApplicationWindow {
                                         }
 
                                         Text {
-                                            text: propertiesTab.description
+                                            text: propertiesTab.modelData.description
                                             font.pointSize: 9
                                             color: "#666"
                                             wrapMode: Text.WordWrap
@@ -305,7 +299,7 @@ ApplicationWindow {
                                         }
 
                                         RowLayout {
-                                            visible: propertiesTab.defaultValue.length > 0
+                                            visible: propertiesTab.modelData.defaultValue.length > 0
 
                                             Text {
                                                 text: "Default:"
@@ -314,7 +308,7 @@ ApplicationWindow {
                                             }
 
                                             Text {
-                                                text: propertiesTab.defaultValue
+                                                text: propertiesTab.modelData.defaultValue
                                                 font.pointSize: 8
                                                 font.family: "monospace"
                                                 color: "#e83e8c"
@@ -322,7 +316,7 @@ ApplicationWindow {
                                         }
 
                                         RowLayout {
-                                            visible: propertiesTab.range.length > 0
+                                            visible: propertiesTab.modelData.range.length > 0
 
                                             Text {
                                                 text: "Range:"
@@ -332,7 +326,7 @@ ApplicationWindow {
                                             }
 
                                             Text {
-                                                text: propertiesTab.range
+                                                text: propertiesTab.modelData.range
                                                 font.pointSize: 8
                                                 font.family: "monospace"
                                                 color: "#fd7e14"
@@ -342,7 +336,7 @@ ApplicationWindow {
                                         Flow {
                                             Layout.fillWidth: true
                                             spacing: 5
-                                            visible: propertiesTab.enumValues.length > 0
+                                            visible: propertiesTab.modelData.enumValues.length > 0
 
                                             Text {
                                                 text: "Values:"
@@ -351,7 +345,7 @@ ApplicationWindow {
                                             }
 
                                             Repeater {
-                                                model: parent.visible ? propertiesTab.enumValues : []
+                                                model: parent.visible ? propertiesTab.modelData.enumValues : []
 
                                                 Rectangle {
                                                     width: enumText.width + 8
@@ -363,7 +357,7 @@ ApplicationWindow {
                                                     Text {
                                                         id: enumText
                                                         anchors.centerIn: parent
-                                                        text: propertiesTab.modelData
+                                                        text: propertiesTab.modelData.modelData
                                                         font.pointSize: 8
                                                         font.family: "monospace"
                                                     }
